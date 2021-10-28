@@ -24,6 +24,8 @@ byte i;
   byte x2 = 140;
   byte y2 = 130;
 byte read;
+byte read1;
+  int si = 0x0000;
 
 // simple 6502 delay loop (5 cycles per loop)
 #define DELAYLOOP(n) \
@@ -144,10 +146,9 @@ void monobitmap_demo() {
 }
 
 void readstniccc() {
-  int si = 0x0000;
-  for (si=0x0000; si=0x4000; si++){
+
     read = scene16_bin[si]; // read a byte
-  }
+    si++;
 }
 
 void main(void)
@@ -156,7 +157,7 @@ void main(void)
   // setup and draw some lines
   monobitmap_setup();
   pal_bg(MONOBMP_PALETTE);
-  monobitmap_demo();
+  readstniccc();
   ppu_on_all();
 while(true){
   ppu_off();
