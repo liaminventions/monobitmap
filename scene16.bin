@@ -11,8 +11,6 @@ that display their own pixels.
 #include "nes.h"
 #include <stdlib.h>
 
-#include "scene16.bin.h"
-
 #define NES_MAPPER 2		// UxROM mapper
 #define NES_CHR_BANKS 0		// CHR RAM
 
@@ -23,7 +21,6 @@ byte i;
   byte y1 = 200;
   byte x2 = 140;
   byte y2 = 130;
-byte read;
 
 // simple 6502 delay loop (5 cycles per loop)
 #define DELAYLOOP(n) \
@@ -143,13 +140,6 @@ void monobitmap_demo() {
   monobitmap_draw_line(100, 200, 140, 130, 1);
 }
 
-void readstniccc() {
-  int si = 0x0000;
-  for (si=0x0000; si=0x4000; si++){
-    read = scene16_bin[si]; // read a byte
-  }
-}
-
 void main(void)
 {
   a = 0;
@@ -160,10 +150,11 @@ void main(void)
   ppu_on_all();
 while(true){
   ppu_off();
-  readstniccc();
+  monobitmap_draw_line(x1, y1, x2, y2, 1);
   ppu_on_all();
   ppu_wait_nmi();
   monobitmap_split();
+  x1++;
 //  ppu_off();
 //  monobitmap_setup();
   // realtime display where 1 pixel per frame
