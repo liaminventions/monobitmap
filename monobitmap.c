@@ -17,15 +17,15 @@ that display their own pixels.
 #define NES_CHR_BANKS 0		// CHR RAM
 
 bool ppu_is_on = false;
-bool a;
 byte i;
-  byte x1 = 100;
-  byte y1 = 200;
-  byte x2 = 140;
-  byte y2 = 130;
+byte x1 = 100;
+byte y1 = 200;
+byte x2 = 140;
+byte y2 = 130;
 byte read;
 byte read1;
-  int si = 0x0000;
+unsigned char buffer[0x0100];
+int si = 0x0000;
 
 // simple 6502 delay loop (5 cycles per loop)
 #define DELAYLOOP(n) \
@@ -147,24 +147,142 @@ void monobitmap_demo() {
 
 void readstniccc() {
 
-    read = scene16_bin[si]; // read a byte
+  read = scene16_bin[si]; // read a byte
+  read1=read;
+  if(read1 & 0x01){
+    monobitmap_clear();
+  }
+  if(read1 & 0x02){
     si++;
+    buffer[0] = scene16_bin[si]; // read a byte
+    si++;
+    buffer[1] = scene16_bin[si]; // read a byte
+    si++;
+    if(buffer[0] & 1){
+      si=si+2;
+    }
+    if(buffer[0] & 2){
+      si=si+2;      
+    }
+    if(buffer[0] & 3){
+      si=si+2;      
+    }
+    if(buffer[0] & 4){
+      si=si+2;      
+    }
+    if(buffer[0] & 5){
+      si=si+2;      
+    }
+    if(buffer[0] & 6){
+      si=si+2;      
+    }
+    if(buffer[0] & 7){
+      si=si+2;      
+    }
+    if(buffer[0] & 8){
+      si=si+2;      
+    }
+    if(buffer[1] & 1){
+      si=si+2;
+    }
+    if(buffer[1] & 2){
+      si=si+2;      
+    }
+    if(buffer[1] & 3){
+      si=si+2;      
+    }
+    if(buffer[1] & 4){
+      si=si+2;      
+    }
+    if(buffer[1] & 5){
+      si=si+2;      
+    }
+    if(buffer[1] & 6){
+      si=si+2;      
+    }
+    if(buffer[1] & 7){
+      si=si+2;      
+    }
+    if(buffer[1] & 8){
+      si=si+2;      
+    }
+    
+  }
+  if(read1 & 0x03){
+    read = scene16_bin[si]; // read a byte
+    buffer[2] = si;
+    si++;
+    for(i=0; i=read; i=i+2){
+      buffer[0] = scene16_bin[si+i];
+      buffer[1] = scene16_bin[si+i+1];
+      monobitmap_set_pixel(buffer[0], buffer[1], 1);
+    }
+    si=si+i;
+    
+    buffer[3] = false;
+    while(buffer[3] != true){
+      read = scene16_bin[si];
+      buffer[4]=read & 15;
+      for(i=0; i=buffer[4]; i++){
+        read = scene16_bin[i];
+        x1= scene16_bin[buffer[2]+read+1];
+        y1= scene16_bin[buffer[2]+read+2];
+        i++;
+        read = scene16_bin[i];
+        x2= scene16_bin[buffer[2]+read+1];
+        y2= scene16_bin[buffer[2]+read+2];
+        monobitmap_draw_line(x1,y1,x2,y2,1);
+      }
+      si=si+i;
+      read = scene16_bin[si];
+      if(read >= 0xfd){
+        buffer[3] = true;
+      }
+    }
+  }
+  if(!read1 & 0x03){ 
+    buffer[3]=false;
+    while(buffer[3] != true){
+      read = scene16_bin[si];
+      buffer[4]=read & 15;
+      for(i=0; i=buffer[4]; i++){
+        x1= scene16_bin[si+i];
+        i++;
+        y1= scene16_bin[si+i];
+        i++;
+        x2= scene16_bin[si+i];
+        i++;
+        y2 = scene16_bin[si+i];
+        i++;
+        monobitmap_draw_line(x1,y1,x2,y2,1);
+      }
+      si=si+i;
+      read = scene16_bin[si];
+      if(read >= 0xfd){
+        buffer[3] = true;
+      }
+    }
+  }
+  read = scene16_bin[si];
+  if(read = 0xfd){
+    while(true){
+    }
+  }
 }
 
 void main(void)
 {
-  a = 0;
   // setup and draw some lines
   monobitmap_setup();
   pal_bg(MONOBMP_PALETTE);
   readstniccc();
   ppu_on_all();
 while(true){
+  ppu_wait_nmi();
+  monobitmap_split();
   ppu_off();
   readstniccc();
   ppu_on_all();
-  ppu_wait_nmi();
-  monobitmap_split();
 //  ppu_off();
 //  monobitmap_setup();
   // realtime display where 1 pixel per frame
