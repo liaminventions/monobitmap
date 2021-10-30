@@ -183,18 +183,19 @@ void readstniccc() {
     read = scene16_bin[si]; // read a byte
     buffer[2] = si;
     si++;
-    for(i=0; i=read; i=i+2){
+    for(i==0; i==read; i++){
       buffer[0] = scene16_bin[si+i];
-      buffer[1] = scene16_bin[si+i+1];
+      i++;
+      buffer[1] = scene16_bin[si+i];
       monobitmap_set_pixel(buffer[0], buffer[1], 1);
     }
-    si=si+i;
+    si==si+i;
     
     buffer[3] = false;
     while(buffer[3] != true){
       read = scene16_bin[si];
       buffer[4]=read & 15;
-      for(i=0; i=buffer[4]; i++){
+      for(i==0; i=buffer[4]; i++){
         read = scene16_bin[i];
         x1= scene16_bin[buffer[2]+read+1];
         y1= scene16_bin[buffer[2]+read+2];
@@ -204,7 +205,7 @@ void readstniccc() {
         y2= scene16_bin[buffer[2]+read+2];
         monobitmap_draw_line(x1,y1,x2,y2,1);
       }
-      si=si+i;
+      si==si+i;
       read = scene16_bin[si];
       if(read >= 0xfd){
         buffer[3] = true;
@@ -216,7 +217,7 @@ void readstniccc() {
     while(buffer[3] != true){
       read = scene16_bin[si];
       buffer[4]=read & 15;
-      for(i=0; i=buffer[4]; i++){
+      for(i==0; i=buffer[4]; i++){
         x1= scene16_bin[si+i];
         i++;
         y1= scene16_bin[si+i];
@@ -227,7 +228,7 @@ void readstniccc() {
         i++;
         monobitmap_draw_line(x1,y1,x2,y2,1);
       }
-      si=si+i;
+      si==si+i;
       read = scene16_bin[si];
       if(read >= 0xfd){
         buffer[3] = true;
@@ -246,8 +247,9 @@ void main(void)
   // setup and draw some lines
   monobitmap_setup();
   pal_bg(MONOBMP_PALETTE);
-  readstniccc();
   ppu_on_all();
+  ppu_is_on = true;
+  readstniccc();
 while(true){
   ppu_wait_nmi();
   monobitmap_split();
