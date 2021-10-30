@@ -26,6 +26,7 @@ byte read;
 byte read1;
 unsigned char buffer[0x0100];
 int si = 0x0000;
+byte temp;
 
 // simple 6502 delay loop (5 cycles per loop)
 #define DELAYLOOP(n) \
@@ -142,7 +143,11 @@ const byte MONOBMP_PALETTE[16] = {
 
 // demo function, draws a bunch of lines
 void monobitmap_demo() {
-  monobitmap_draw_line(100, 200, 140, 130, 1);
+  monobitmap_draw_line(x1,y1,x2,y2,1);    
+  x1++;
+  x2--;
+  y1++;
+  y2--;
 }
 
 void readstniccc() {
@@ -158,53 +163,19 @@ void readstniccc() {
     si++;
     buffer[1] = scene16_bin[si]; // read a byte
     si++;
-    if(buffer[0] & 1){
-      si=si+2;
+    temp = buffer[0];
+    while (temp != 0) {
+      if (temp & 1) {
+        si=si+2;
+      }
+      temp = temp >> 1;
     }
-    if(buffer[0] & 2){
-      si=si+2;      
-    }
-    if(buffer[0] & 3){
-      si=si+2;      
-    }
-    if(buffer[0] & 4){
-      si=si+2;      
-    }
-    if(buffer[0] & 5){
-      si=si+2;      
-    }
-    if(buffer[0] & 6){
-      si=si+2;      
-    }
-    if(buffer[0] & 7){
-      si=si+2;      
-    }
-    if(buffer[0] & 8){
-      si=si+2;      
-    }
-    if(buffer[1] & 1){
-      si=si+2;
-    }
-    if(buffer[1] & 2){
-      si=si+2;      
-    }
-    if(buffer[1] & 3){
-      si=si+2;      
-    }
-    if(buffer[1] & 4){
-      si=si+2;      
-    }
-    if(buffer[1] & 5){
-      si=si+2;      
-    }
-    if(buffer[1] & 6){
-      si=si+2;      
-    }
-    if(buffer[1] & 7){
-      si=si+2;      
-    }
-    if(buffer[1] & 8){
-      si=si+2;      
+    temp = buffer[1];
+    while (temp != 0) {
+      if (temp & 1) {
+        si=si+2;
+      }
+      temp = temp >> 1;
     }
     
   }
@@ -283,10 +254,5 @@ while(true){
   ppu_off();
   readstniccc();
   ppu_on_all();
-//  ppu_off();
-//  monobitmap_setup();
-  // realtime display where 1 pixel per frame
-//  monobitmap_demo();
-//  ppu_on_all();
 }
 }
