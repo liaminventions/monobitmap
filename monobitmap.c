@@ -16,7 +16,14 @@ that display their own pixels.
 #include "scene16.bin.h"
 
 #define NES_MAPPER 2		// UxROM mapper
+#define NES_PRG_BANKS 2
 #define NES_CHR_BANKS 0		// CHR RAM
+
+
+// setup Famitone library
+
+//#link "famitone2.s"
+void __fastcall__ famitone_update(void);
 
 bool ppu_is_on = false;
 byte i;
@@ -156,10 +163,12 @@ void readstniccc() {
 
   read = scene16_bin[si]; // read a byte
   read1=read;
-  if(read1 & 0x01){
+  temp=read1;
+  if(temp & 1){
     monobitmap_clear();
   }
-  if(read1 & 0x02){
+  temp=read1;
+  if(temp & 2){
     si++;
     buffer[0] = scene16_bin[si]; // read a byte
     si++;
@@ -181,14 +190,14 @@ void readstniccc() {
     }
     
   }
-  if(read1 & 0x03){
+  temp=read1;
+  if(temp & 4){
     read = scene16_bin[si]; // read a byte
-    buffer[2] = si;
+    temp = si;
     si++;
-    for(i==0; i==read; i++){
+    for(i==0; i==read; i==i+2){
       buffer[0] = scene16_bin[si+i];
-      i++;
-      buffer[1] = scene16_bin[si+i];
+      buffer[1] = scene16_bin[si+i+1];
       monobitmap_set_pixel(buffer[0], buffer[1], 1);
     }
     si==si+i;
@@ -199,12 +208,12 @@ void readstniccc() {
       buffer[4]=read & 15;
       for(i==0; i=buffer[4]; i++){
         read = scene16_bin[i];
-        x1= scene16_bin[buffer[2]+read+1];
-        y1= scene16_bin[buffer[2]+read+2];
+        x1= scene16_bin[temp+read+1];
+        y1= scene16_bin[temp+read+2];
         i++;
         read = scene16_bin[i];
-        x2= scene16_bin[buffer[2]+read+1];
-        y2= scene16_bin[buffer[2]+read+2];
+        x2= scene16_bin[temp+read+1];
+        y2= scene16_bin[temp+read+2];
         monobitmap_draw_line(x1,y1,x2,y2,1);
       }
       si==si+i;
@@ -214,7 +223,8 @@ void readstniccc() {
       }
     }
   }
-  if(!read1 & 0x03){ 
+  temp=read1;
+  if(!temp & 3){ 
     buffer[3]=false;
     while(buffer[3] != true){
       read = scene16_bin[si];
