@@ -184,13 +184,14 @@ void readstniccc() {
     read = scene16_bin[si]; // read a byte
     //temp = si;
     si++;
-    for(i==si; i==si+read; i++){
+    for(i=si; i<=si+read; i++){
       x2 = scene16_bin[i];
       i++;
       y2 = scene16_bin[i];
       monobitmap_set_pixel(x2, y2, 1);
     }
-    si=+i;
+    
+    si=i;
     fatt = false;
     while(fatt == false){
       read = scene16_bin[si];
@@ -198,7 +199,7 @@ void readstniccc() {
         fatt = true;
         return;
       }
-      if(read = 0xfd){
+      if(read == 0xfd){
         while(true){
         }
       }
