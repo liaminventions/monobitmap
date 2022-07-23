@@ -34,8 +34,9 @@ byte y3 = 130;
 byte read;
 byte read1;
 unsigned char buffer[0x0100];
-int si = 0x0000;
+word si = 0x0000;
 byte temp;
+bool fatt;
 
 // simple 6502 delay loop (5 cycles per loop)
 #define DELAYLOOP(n) \
@@ -155,11 +156,10 @@ void readstniccc() {
   read = scene16_bin[si]; // read a byte
   read1=read;
   temp=read1;
-  if(temp & 1){
+  if(read1 & 1){
     monobitmap_clear();
   }
-  temp=read1;
-  if(temp & 2){
+  if(read1 & 2){
     si++;
     buffer[0] = scene16_bin[si]; // read a byte
     si++;
@@ -170,35 +170,32 @@ void readstniccc() {
       if (temp & 1) {
         si=si+2;
       }
-      temp = temp >> 1;
+      temp >>= 1;
     }
     temp = buffer[1];
     while (temp != 0) {
       if (temp & 1) {
         si=si+2;
       }
-      temp = temp >> 1;
+      temp >>= 1;
     }
-    
   }
-  temp=read1;
-  if(temp & 4){
+  if(read1 & 4){
     read = scene16_bin[si]; // read a byte
-    temp = si;
+    //temp = si;
     si++;
-    for(i==0; i==read; i++){
-      x2 = scene16_bin[si+i];
+    for(i==si; i==si+read; i++){
+      x2 = scene16_bin[i];
       i++;
-      y2 = scene16_bin[si+i];
+      y2 = scene16_bin[i];
       monobitmap_set_pixel(x2, y2, 1);
     }
-    si=si+i;
-    
-    buffer[3] = false;
-    while(buffer[3] == false){
+    si=+i;
+    fatt = false;
+    while(fatt == false){
       read = scene16_bin[si];
       if(read > 0xfd){
-        buffer[3] = true;
+        fatt = true;
         return;
       }
       if(read = 0xfd){
@@ -220,7 +217,6 @@ void readstniccc() {
     }
   }
   temp=read1;
-  if(!temp & 4){ 
     buffer[3]=false;
     while(buffer[3] == false){
       read = scene16_bin[si];
@@ -242,7 +238,6 @@ void readstniccc() {
         buffer[3] = true;
       }
     }
-  }
 }
 
 void main(void)
@@ -252,12 +247,13 @@ void main(void)
   pal_bg(MONOBMP_PALETTE);
   ppu_on_all();
   ppu_is_on = true;
-  readstniccc();
+  //readstniccc();
 while(true){
   ppu_wait_nmi();
   monobitmap_split();
-  ppu_off();
+  //ppu_off();
   readstniccc();
-  ppu_on_all();
+  //monobitmap_set_pixel(x2,y2,15);
+  //ppu_on_all();
 }
 }
