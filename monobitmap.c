@@ -182,8 +182,8 @@ void readstniccc() {
   }
   if(read1 & 4){
     read = scene16_bin[si]; // read a byte
-    //temp = si;
     si++;
+    temp = si;
     for(i=si; i<=si+read; i++){
       x2 = scene16_bin[i];
       i++;
@@ -204,41 +204,44 @@ void readstniccc() {
         }
       }
       buffer[4]=read & 0x0f;
-      for(i=0; i=buffer[4]; i++){
+      for(i=0; i<=buffer[4]*2; i++){
+        read = scene16_bin[i+temp];
+        
+        x2= scene16_bin[temp+read];
+        y2= scene16_bin[temp+read+1];
+        monobitmap_draw_line(x2,y2,x3,y3,1);       // NOO I NEED TO FILL A POLY NOT A LINE aaasa aaa aewrdri90shrwjoehfew8jnj
+      }
+      si+=i;
+    }
+  } else {
+    fatt = false;
+    while(fatt == false){
+      read = scene16_bin[si];
+      if(read > 0xfd){
+        fatt = true;
+        return;
+      }
+      if(read == 0xfd){
+        while(true){
+        }
+      }
+      buffer[4]=read & 0x0f;
+      for(i=0; i<=buffer[4]*2; i++){
         read = scene16_bin[i];
-        x2= scene16_bin[temp+i+1];
-        y2= scene16_bin[temp+i+2];
+        x2= scene16_bin[read];
         i++;
         read = scene16_bin[i];
-        x3= scene16_bin[temp+i+1];
-        y3= scene16_bin[temp+i+2];
+        y2= scene16_bin[read];
+        read = scene16_bin[i];
+        x3= scene16_bin[read];
+        i++;
+        read = scene16_bin[i];
+        y3= scene16_bin[read];
         monobitmap_draw_line(x2,y2,x3,y3,1);       
       }
-      si=si+i;
+      si+=i;
     }
   }
-  temp=read1;
-    buffer[3]=false;
-    while(buffer[3] == false){
-      read = scene16_bin[si];
-      buffer[4]=read & 0x0f;
-      for(i==0; i=buffer[4]; i++){
-        x2= scene16_bin[si+i];
-        i++;
-        y2= scene16_bin[si+i];
-        i++;
-        x3= scene16_bin[si+i];
-        i++;
-        y3 = scene16_bin[si+i];
-        i++;
-        monobitmap_draw_line(x2,y2,x3,y3,1);
-      }
-      si==si+i;
-      read = scene16_bin[si];
-      if(read >= 0xfd){
-        buffer[3] = true;
-      }
-    }
 }
 
 void main(void)
